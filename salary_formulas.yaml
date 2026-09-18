@@ -1,0 +1,351 @@
+metadata:
+  source_files:
+  - Untitled.xlsx
+  - ລາພັກ+ປີ້ນະໂຍບາຍຕໍ່ພະນັກງານ ປີ 2026 TO IA.xlsx
+  extracted_date: '2026-09-15'
+  currency: LAK
+  version: '1.0'
+base_salary:
+  description: Base salary calculated from grade/step table (ຊັ້ນຂັ້ນ sheet)
+  formula: base_salary = grade_index * 9500
+  grade_index:
+    description: Row number in grade table starting from 1
+    grades: 15
+    steps_per_grade: 14
+    base_multiplier: 9500
+    examples:
+      grade_1_step_1: 9500
+      grade_1_step_2: 9500
+      grade_15_step_1: 2603000
+      grade_15_step_14: 2726500
+  grade_step_table:
+  - grade: 1/1
+    step_index: 260
+    base: 2470000
+  - grade: 1/2
+    step_index: 261
+    base: 2479500
+  - grade: 1/3
+    step_index: 262
+    base: 2489000
+  - grade: 1/4
+    step_index: 263
+    base: 2498500
+  - grade: 1/5
+    step_index: 264
+    base: 2508000
+  - grade: 1/6
+    step_index: 265
+    base: 2517500
+  - grade: 1/7
+    step_index: 266
+    base: 2527000
+  - grade: 1/8
+    step_index: 267
+    base: 2536500
+  - grade: 1/9
+    step_index: 268
+    base: 2546000
+  - grade: 1/10
+    step_index: 269
+    base: 2555500
+  - grade: 1/11
+    step_index: 270
+    base: 2565000
+  - grade: 1/12
+    step_index: 271
+    base: 2574500
+  - grade: 1/13
+    step_index: 272
+    base: 2584000
+  - grade: 1/14
+    step_index: 273
+    base: 2593500
+  - grade: 1/15
+    step_index: 274
+    base: 2603000
+  seniority_column: Years of service (column E in ຊັ້ນຂັ້ນ)
+position_allowance:
+  description: Position allowance as percentage of base salary (from ຂັ້ນເງິນເດືອນ
+    sheet)
+  formula: position_allowance = base_salary * position_percentage
+  position_percentages:
+    grade_15_deputy_dg: 1.0
+    grade_14_dept_head: 0.86
+    grade_13_deputy_dept_head: 0.58
+    grade_12_division_head: 0.5
+    grade_11_senior_admin: 0.45
+    grade_10_admin: 0.4
+    grade_9_section_head_3: 0.52
+    grade_8_section_head_2: 0.9
+    grade_7_section_head_1: 0.8
+    grade_6_supervisor_3: 0.7
+    grade_5_supervisor_2: 0.65
+    grade_4_supervisor_1_entry: 0.6
+    grade_3_senior_officer: 0.5
+  note: Percentages for grades 9-3 are relative to grade 9 base (section head 3)
+seniority_allowance:
+  description: Annual seniority allowance based on years of service (ປີການ sheet)
+  formula: seniority_allowance = years_of_service * tier_rate_per_year
+  tiers:
+  - tier: 1
+    years_range: 1-5
+    rate_per_year: 10000
+    description: ໄລຍະ 1-5 ປີ
+  - tier: 2
+    years_range: 6-15
+    rate_per_year: 20000
+    description: ໄລຍະ 6-15 ປີ
+  - tier: 3
+    years_range: 16-25
+    rate_per_year: 30000
+    description: ໄລຍະ 16-25 ປີ
+  - tier: 4
+    years_range: '>=26'
+    rate_per_year: 40000
+    description: ໄລຍະ 26 ປີຂຶ້ນມາ
+  examples:
+    5_years: 50000
+    10_years: 150000
+    20_years: 450000
+    30_years: 1000000
+housing_allowance:
+  description: Fixed housing allowance
+  lak_amount: 15000
+  usd_conversion_rate: 176
+  usd_amount: 85.23
+  formula: housing_usd = 15000 / 176
+currency_conversion:
+  base_currency: LAK
+  rates:
+    USD:
+      rate: 15000
+      description: 'Fixed rate used in Excel: 1 USD = 15,000 LAK'
+      formula: USD = LAK / 15000
+    THB:
+      rate: variable
+      description: Market rate, referenced per location
+    CNY:
+      rate: variable
+      description: Market rate, referenced per location
+  location_rates:
+    BKK:
+      currency: THB
+      usd_rate: 34.17
+    HAN:
+      currency: USD
+      usd_rate: 1.0
+    SGN:
+      currency: USD
+      usd_rate: 1.0
+    ICN:
+      currency: USD
+      usd_rate: 1.0
+    KMG:
+      currency: CNY
+      usd_rate: 7.2
+    CAN:
+      currency: CNY
+      usd_rate: 7.2
+flight_allowances:
+  description: Flight hour allowances (Ground, Crew, TEX sheets)
+  regular_hour_rate: variable by position
+  ot_hour_rate: variable by position
+  per_diem:
+    domestic: variable
+    international: variable
+  calculation:
+    regular_pay: flight_hours * regular_rate
+    ot_pay: ot_hours * ot_rate
+    total_flight_allowance: regular_pay + ot_pay + per_diem
+tax_and_deductions:
+  personal_income_tax:
+    rate: 0.055
+    description: 5.5% personal income tax (OPS)
+    formula: tax = gross_salary * 0.055
+  social_security:
+    employee_rate: 0.055
+    company_rate: 0.06
+    description: 5.5% employee + 6% company contribution
+    formula:
+      employee_contribution: gross * 0.055
+      company_contribution: gross * 0.06
+  other_deductions:
+    description: Other deductions (union, welfare, loans, etc.)
+    variable: true
+  net_salary:
+    formula: net = gross - personal_tax - employee_ss - other_deductions
+monthly_gross_calculation:
+  description: Complete monthly gross salary calculation for civil aviation staff
+  components:
+  - base_salary
+  - position_allowance
+  - seniority_allowance
+  - housing_allowance
+  - flight_allowance
+  - other_allowances
+  formula: gross = base_salary + position_allowance + seniority_allowance + housing
+    + flight_allowance + other
+foreign_expert_salary:
+  description: Expat salary calculation (ຊຽ່ວຊານ sheet)
+  hourly_rates:
+    maintenance_specialist: 30
+    commercial_specialist: 20
+  currency: USD
+  conversion:
+    THB: USD * THB_rate
+    CNY: USD * CNY_rate
+    LAK: USD * 15000
+  tax: Same 5.5%/6% rules apply
+leave_calculation:
+  description: Leave tracking from live data sheets
+  leave_types:
+  - code: annual
+    name: ລາພັກປະຈໍາ
+    accrual: 18 days/year
+  - code: sick
+    name: ລາພັກເປັນ
+    accrual: 30 days/year
+  - code: maternity
+    name: ລາພັກແມ່
+    accrual: 90-180 days
+  - code: unpaid
+    name: ລາພັກບໍ່ເອົາເງິນ
+    accrual: variable
+  annual_leave_categories:
+    FOC: Free of charge (full pay)
+    90_percent: 90% pay
+    75_percent: 75% pay
+  unpaid_leave_impact: Reduces monthly salary proportionally
+department_structures:
+  Ground:
+    description: Ground operations staff
+    columns:
+    - base_salary
+    - service_years
+    - annual_seniority
+    - position_allowance
+    - work_allowance
+    - housing
+    - total_gross
+    - regular_flight
+    - ot_flight
+    - adjustments
+    - net_after_tax
+  Crew:
+    description: Flight crew (pilots, cabin crew)
+    columns:
+    - base_salary
+    - position_allowance
+    - flight_regular
+    - flight_ot
+    - adjustments
+    - housing
+    - total_gross
+    - tax
+    - ss
+    - net
+  TEX:
+    description: Technical/engineering staff
+    columns:
+    - base_salary
+    - service_years
+    - annual_seniority
+    - position_allowance
+    - work_allowance
+    - housing
+    - total_gross
+    - regular_flight
+    - ot_flight
+    - adjustments
+    - net_after_tax
+calculation_engine:
+  input_parameters:
+    employee:
+      employee_id: string
+      grade: integer (1-15)
+      step: integer (1-14)
+      position_title: string
+      years_of_service: integer
+      department: enum [Ground, Crew, TEX, Admin, Foreign]
+      flight_hours_regular: number
+      flight_hours_ot: number
+      location: string (for currency)
+    period:
+      month: integer (1-12)
+      year: integer
+    exchange_rates:
+      USD_LAK: number (default 15000)
+      THB_USD: number
+      CNY_USD: number
+  output:
+    base_salary: number
+    position_allowance: number
+    seniority_allowance: number
+    housing_allowance: number
+    flight_allowance: number
+    gross_salary: number
+    personal_tax: number
+    employee_ss: number
+    company_ss: number
+    other_deductions: number
+    net_salary: number
+    currency: string
+    exchange_rate_used: number
+  calculation_steps:
+  - 1. Lookup base_salary from grade/step table
+  - 2. Calculate position_allowance = base_salary * position_percentage[position_title]
+  - 3. Calculate seniority_allowance = years_of_service * tier_rate(years_of_service)
+  - 4. housing_allowance = 15000 LAK (or converted)
+  - 5. flight_allowance = flight_hours_regular * rate + flight_hours_ot * ot_rate
+  - 6. gross = sum of above
+  - 7. personal_tax = gross * 0.055
+  - 8. employee_ss = gross * 0.055
+  - 9. company_ss = gross * 0.06
+  - 10. net = gross - personal_tax - employee_ss - other_deductions
+  - 11. Convert to target currency if needed
+validation_rules:
+  grade_range: 1-15
+  step_range: 1-14
+  max_service_years: 40
+  retirement_age: 60
+  min_base_salary: 9500
+  max_base_salary: 2726500
+  tax_rate_fixed: true
+  ss_rates_fixed: true
+reporting:
+  payslip_fields:
+  - employee_name
+  - employee_id
+  - department
+  - position
+  - grade
+  - step
+  - base_salary
+  - position_allowance
+  - seniority_allowance
+  - housing
+  - flight_allowance
+  - gross
+  - tax
+  - ss_employee
+  - ss_company
+  - other_deductions
+  - net
+  - currency
+  - period
+  - exchange_rate
+  monthly_summary:
+  - total_employees
+  - total_gross
+  - total_tax
+  - total_ss
+  - total_net
+  - by_department
+  - by_grade
+  - by_currency
+  annual_reports:
+  - tax_annual
+  - ss_annual
+  - leave_summary
+  - salary_history

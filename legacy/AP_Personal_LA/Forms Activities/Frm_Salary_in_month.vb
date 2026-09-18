@@ -1,0 +1,565 @@
+﻿Public Class Frm_Salary_in_month
+
+    Private Sub Frm_Salary_in_month_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles MyBase.Load
+        txtTumnang_Money.Text = 0
+        txtyear_money.Text = 0
+        txtAGL.Text = 0
+        txtTax.Text = 0
+        txtkhongsep.Text = 0
+        txtson.Text = 0
+        txtmom.Text = 0
+        txtson_Money.Text = 0
+        txtMom_mony.Text = 0
+        addnew()
+
+        Load_Tax()
+        loadCMB()
+
+
+        If EditActive = True Then
+            Editdata()
+
+
+        Else
+            EditActive = False
+            'addnew()
+
+
+        End If
+    End Sub
+    Private Sub Editdata()
+        Dim aa As String
+        Dim rs As New ADODB.Recordset
+        aa = "SELECT  * from AP_Salary_in_Month  where E_ID=N'" & E_ID & "' " & shr_Month & ""
+        Call LoadRs(aa, rs)
+        With rs
+            If .RecordCount > 0 Then
+                txtid.Text = Trim(.Fields("E_ID").Value.ToString)
+                DT_up.Value = Trim(.Fields("DT_Month").Value.ToString)
+
+                txtSection_ID.Text = Trim(.Fields("Sections_id").Value.ToString)
+                Cmb_Sections.Text = Trim(.Fields("Sections").Value.ToString)
+                txtdepart_ID.Text = Trim(.Fields("Department_id").Value.ToString)
+                cmb_Department.Text = Trim(.Fields("Department").Value.ToString)
+
+                txt_type_in_id.Text = Trim(.Fields("txt_type_in_id").Value.ToString)
+                cmb_type_in.Text = Trim(.Fields("cmb_type_in").Value.ToString)
+
+                TxtPersonNmL.Text = Trim(.Fields("Name_L").Value.ToString)
+                TxtPersonNmE.Text = Trim(.Fields("Name_E").Value.ToString)
+                TxtTel.Text = Trim(.Fields("Phone").Value.ToString)
+                TxtAccountNo.Text = Trim(.Fields("Bank_no").Value.ToString)
+                txtAPSocial.Text = Trim(.Fields("SSO_no").Value.ToString)
+
+                cmb_percen.Text = Trim(.Fields("percen").Value.ToString)
+                cmbclass.Text = Trim(.Fields("txtclass").Value.ToString)
+                cmblevel.Text = Trim(.Fields("txtlevel").Value.ToString)
+                txtV_C.Text = Trim(.Fields("txtV_C").Value.ToString)
+
+                txtLevel_Clss_Money_Now.Text = Format(CDbl(.Fields("Level_Clss_Money").Value), "##,##0.00")
+                txtTumnang_Money.Text = Format(CDbl(.Fields("Tumnang_Money").Value), "##,##0.00")
+                txtyear_money.Text = Format(CDbl(.Fields("year_money").Value), "##,##0.00")
+                txttotal.Text = Format(CDbl(.Fields("txttotal").Value), "##,##0.00")
+                txtAGL.Text = Format(CDbl(.Fields("AGL").Value), "##,##0.00")
+                txtTotal_remaining.Text = Format(CDbl(.Fields("Total_remaining").Value), "##,##0.00")
+                txtTax.Text = Format(CDbl(.Fields("Tax").Value), "##,##0.00")
+                txtkhongsep.Text = Format(CDbl(.Fields("khongsep").Value), "##,##0.00")
+                txtson.Text = Format(CDbl(.Fields("txtson").Value), "##,##0")
+                txtson_Money.Text = Format(CDbl(.Fields("txtson_Money").Value), "##,##0.00")
+                txtmom.Text = Format(CDbl(.Fields("txtmom").Value), "##,##0")
+                txtMom_mony.Text = Format(CDbl(.Fields("txtMom_mony").Value), "##,##0.00")
+                txtToltal_All.Text = Format(CDbl(.Fields("txtToltal_All").Value), "##,##0.00")
+
+
+                txtremark.Text = Trim(.Fields("remark").Value.ToString)
+
+            End If
+        End With
+    End Sub
+    Private Sub addnew()
+        cmbclass.Text = 1
+        cmblevel.Text = 1
+        txtTumnang_Money.Text = 0
+        txtyear_money.Text = 0
+        txtAGL.Text = 0
+        txtTax.Text = 0
+        txtkhongsep.Text = 0
+        txtson.Text = 0
+        txtmom.Text = 0
+        txtson_Money.Text = 0
+        txtMom_mony.Text = 0
+
+
+        cmb_percen.SelectedIndex = 0
+
+        AutoNumber()
+    End Sub
+    Private Sub loadCMB()
+        'Cmb_Sections.Items.Clear()
+        'Call load_Cmb("select Sec_nmL from AP_Sections", "Sec_nmL", Cmb_Sections)
+        'Cmb_Sections.SelectedIndex = 0
+
+        'cmb_Department.Items.Clear()
+        'Call load_Cmb("select DP_Name from Department", "DP_Name", cmb_Department)
+        'cmb_Department.SelectedIndex = 0
+
+
+        cmbclass.Items.Clear()
+        Call load_Cmb("select cl_ID from Class", "cl_ID", cmbclass)
+        cmbclass.SelectedIndex = 0
+
+        cmblevel.Items.Clear()
+        Call load_Cmb("select LV_ID from Level", "LV_ID", cmblevel)
+        cmblevel.SelectedIndex = 0
+    End Sub
+
+
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        FrmCustomer_item.ShowDialog()
+        If MDCusID = "" Then Exit Sub
+        LoadData_CV()
+        AutoNumber()
+    End Sub
+    Private Sub LoadData_CV()
+        Dim rs As New ADODB.Recordset
+        Dim aa As String
+        With rs
+            aa = "SELECT    AP_CV.*, AP_Village.Vl_nm, AP_District.Dt_id, AP_District.Dt_nm, AP_Province.PV_ID, AP_Province.PV_nm, " & _
+                    "   AP_Village_1.Vl_nm AS Vl_nm1, AP_District_1.Dt_nm AS Dt_nm1, AP_Province_1.PV_nm AS PV_nm1 " & _
+                    "   FROM         AP_CV INNER JOIN " & _
+                    "   AP_Village ON AP_CV.BVill_ID = AP_Village.Vl_ID INNER JOIN  " & _
+                     "  AP_District ON AP_Village.Dt_id = AP_District.Dt_id INNER JOIN " & _
+                     "  AP_Province ON AP_District.PV_id = AP_Province.PV_ID INNER JOIN " & _
+                     "  AP_Village AS AP_Village_1 ON AP_CV.Add_Vill_ID = AP_Village_1.Vl_ID INNER JOIN " & _
+                     "  AP_District AS AP_District_1 ON AP_Village_1.Dt_id = AP_District_1.Dt_id INNER JOIN " & _
+                    "   AP_Province AS AP_Province_1 ON AP_District_1.PV_id = AP_Province_1.PV_ID WHERE 1=1  AND AP_CV.E_ID=N'" & CustID & "' "
+            Call LoadRs(aa, rs)
+            If .RecordCount <> 0 Then
+                DT_up.Text = (.Fields("DT_Work_now").Value.ToString)
+                txtid.Text = (.Fields("E_ID").Value.ToString)
+                TxtPersonNmL.Text = (.Fields("Name_L").Value.ToString)
+                TxtPersonNmE.Text = (.Fields("Name_E").Value.ToString)
+
+                txtSection_ID.Text = (.Fields("Sections_id").Value.ToString)
+                Cmb_Sections.Text = (.Fields("Sections").Value.ToString)
+
+                txtdepart_ID.Text = (.Fields("Department_id").Value.ToString)
+                cmb_Department.Text = (.Fields("Department").Value.ToString)
+
+                txt_type_in_id.Text = (.Fields("type_in_id").Value.ToString)
+                cmb_type_in.Text = (.Fields("type_in_nm").Value.ToString)
+
+                TxtTel.Text = (.Fields("Phone").Value.ToString)
+                TxtAccountNo.Text = (.Fields("Bank_no").Value.ToString)
+                txtAPSocial.Text = (.Fields("SSO_no").Value.ToString)
+
+                cmb_percen.Text = (.Fields("percen").Value.ToString)
+                cmbclass.Text = (.Fields("cmbclass").Value.ToString)
+                cmblevel.Text = (.Fields("cmblevel").Value.ToString)
+                txt_V_C_old.Text = (.Fields("txtV_C").Value.ToString)
+
+                txtclass_old.Text = (.Fields("cmbclass").Value.ToString)
+                txtlevel_old.Text = (.Fields("cmblevel").Value.ToString)
+                txt_V_C_old.Text = (.Fields("txtV_C").Value.ToString)
+
+                txtLevel_Clss_Money_Now.Text = Format(CDbl(.Fields("Level_Clss_Money").Value), "##,##0.00")
+                txtson.Text = (.Fields("txtson").Value.ToString)
+                txtson_Money.Text = Format(CDbl(.Fields("txtson_Money").Value), "##,##0.00")
+                txtmom.Text = (.Fields("txtmom").Value.ToString)
+                txtMom_mony.Text = Format(CDbl(.Fields("txtMom_mony").Value), "##,##0.00")
+
+            End If
+        End With
+
+    End Sub
+
+    Private Sub Bclos_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Bclos.Click
+        Me.Close()
+    End Sub
+
+    Private Sub Cmb_Sections_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Cmb_Sections.SelectedIndexChanged
+        Dim RSC As New ADODB.Recordset
+        Call LoadRs("Select * From AP_Sections Where Sec_nmL=N'" & Trim(Cmb_Sections.Text) & "'   ", RSC)
+        If RSC.RecordCount > 0 Then
+            txtSection_ID.Text = Trim(RSC("Sec_id").Value)
+        End If
+    End Sub
+
+    Private Sub cmb_Department_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmb_Department.SelectedIndexChanged
+        Dim RSC As New ADODB.Recordset
+        Call LoadRs("Select * From Department Where DP_name=N'" & Trim(cmb_Department.Text) & "'   ", RSC)
+        If RSC.RecordCount > 0 Then
+            txtdepart_ID.Text = Trim(RSC("DP_ID").Value)
+        End If
+    End Sub
+
+    Private Sub cmbclass_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmbclass.SelectedIndexChanged
+        Load_Tax()
+
+        txtV_C.Text = cmbclass.Text & "/" & cmblevel.Text
+
+        If cmblevel.Text <> "" Then
+            loadmonet_class()
+            Load_sum_tax()
+        End If
+    End Sub
+
+    Private Sub cmblevel_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmblevel.SelectedIndexChanged
+        Load_Tax()
+
+        txtV_C.Text = cmbclass.Text & "/" & cmblevel.Text
+
+        loadmonet_class()
+        Load_sum_tax()
+    End Sub
+    Private Sub loadmonet_class()
+        Dim rs As New ADODB.Recordset
+        Call LoadRs("select * from Level_class where name='" & Trim(Apostrophe(txtV_C.Text)) & "'", rs)
+        With rs
+            If .RecordCount > 0 Then
+
+                txtLevel_Clss_Money_Now.Text = Format(CDbl(.Fields("Toltle").Value), "##,##0.00")
+
+            Else
+                txtLevel_Clss_Money_Now.Text = 0
+
+            End If
+        End With
+        If cmb_percen.Text <> "" Then
+            txtLevel_Clss_Money_Now.Text = Format(CDbl(txtLevel_Clss_Money_Now.Text) * CDbl(cmb_percen.Text) / 100, "##,##0.00")
+        End If
+
+
+        txttotal.Text = Format(CDbl(txtLevel_Clss_Money_Now.Text) + CDbl(txtTumnang_Money.Text) + CDbl(txtyear_money.Text), "##,##0.00")
+        txtTotal_remaining.Text = Format(CDbl(txttotal.Text) - CDbl(txtAGL.Text), "##,##0.00")
+        'txtToltal_All.Text = Format(CDbl(txtTotal_remaining.Text) - CDbl(txtTax.Text) + CDbl(txtkhongsep.Text) + CDbl(txtson_Money.Text) + CDbl(txtMom_mony.Text), "##,##0.00")
+
+    End Sub
+    Private Sub Load_sum_tax()
+        'txttotal_amount.Text = Format(CDbl(txtworday_month.Text) * CDbl(txtmoney_per_day.Text), "##,##0.00")
+        'txtTotal_remaining.Text = Format(CDbl(txtworday_month.Text) * CDbl(txtmoney_per_day.Text), "##,##0.00")
+        'txttotal_Befor.Text = Format(CDbl(txttotal_Befor.Text) + CDbl(txtcost_living_total.Text), "##,##0")
+
+        If Format(CDbl(txtTotal_remaining.Text), "##,##0") > CDbl(Tax_LAK1) Or Format(CDbl(txtTotal_remaining.Text), "##,##0") = CDbl(Tax_LAK2) Then
+            If Format(CDbl(txtTotal_remaining.Text), "##,##0.00") > CDbl(Tax_LAK2) Then
+                Tax1_cut = CDbl(Tax_LAK2) - CDbl(Tax_LAK1)
+                Tax1_Sum = CDbl(Tax1_cut) * CDbl(Tax2) / 100
+                Tax2_Sum = 0
+                Tax3_Sum = 0
+                Tax4_Sum = 0
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            Else
+                Tax1_cut = Format(CDbl(txtTotal_remaining.Text), "##,##0.00") - CDbl(Tax_LAK1)
+                Tax1_Sum = CDbl(Tax1_cut) * CDbl(Tax2) / 100
+                'txttotal_after.Text = Format(CDbl(txttotal_amount.Text) - CDbl(txtTax_money.Text), "##,##0.00")
+                Tax2_Sum = 0
+                Tax3_Sum = 0
+                Tax4_Sum = 0
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            End If
+        Else
+            Tax1_Sum = 0
+        End If
+
+        If Format(CDbl(txtTotal_remaining.Text), "##,##0") > CDbl(Tax_LAK2) Or Format(CDbl(txtTotal_remaining.Text), "##,##0") = CDbl(Tax_LAK3) Then
+            If Format(CDbl(txtTotal_remaining.Text), "##,##0") > CDbl(Tax_LAK3) Then
+                Tax2_cut = CDbl(Tax_LAK3) - CDbl(Tax_LAK2)
+                Tax2_Sum = CDbl(Tax2_cut) * CDbl(Tax3) / 100
+                Tax3_Sum = 0
+                Tax4_Sum = 0
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            Else
+                Tax2_cut = Format(CDbl(txtTotal_remaining.Text), "##,##0.00") - CDbl(Tax_LAK2)
+                Tax2_Sum = CDbl(Tax2_cut) * CDbl(Tax3) / 100
+                'txttotal_after.Text = Format(CDbl(txttotal_amount.Text) - CDbl(txtTax_money.Text), "##,##0.00")
+                Tax3_Sum = 0
+                Tax4_Sum = 0
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            End If
+        End If
+
+        If Format(CDbl(txtTotal_remaining.Text), "##,##0") > CDbl(Tax_LAK3) Or Format(CDbl(txtTotal_remaining.Text), "##,##0") = CDbl(Tax_LAK4) Then
+            If Format(CDbl(txtTotal_remaining.Text), "##,##0.00") > CDbl(Tax_LAK3) Then
+                Tax3_cut = CDbl(Tax_LAK4) - CDbl(Tax_LAK3)
+                Tax3_Sum = CDbl(Tax3_cut) * CDbl(Tax4) / 100
+                Tax4_Sum = 0
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            Else
+                Tax3_cut = Format(CDbl(txtTotal_remaining.Text), "##,##0.00") - CDbl(Tax_LAK3)
+                Tax3_Sum = CDbl(Tax3_cut) * CDbl(Tax4) / 100
+                'txttotal_after.Text = Format(CDbl(txttotal_amount.Text) - CDbl(txtTax_money.Text), "##,##0.00")
+                Tax4_Sum = 0
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            End If
+        End If
+
+        If Format(CDbl(txtTotal_remaining.Text), "##,##0.00") > CDbl(Tax_LAK4) Or Format(CDbl(txtTotal_remaining.Text), "##,##0.00") = CDbl(Tax_LAK5) Then
+            If Format(CDbl(txtTotal_remaining.Text), "##,##0.00") > CDbl(Tax_LAK4) Then
+                Tax4_cut = CDbl(Tax_LAK5) - CDbl(Tax_LAK4)
+                Tax4_Sum = CDbl(Tax4_cut) * CDbl(Tax5) / 100
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            Else
+                Tax4_cut = Format(CDbl(txtTotal_remaining.Text), "##,##0.00") - CDbl(Tax_LAK4)
+                Tax4_Sum = CDbl(Tax4_cut) * CDbl(Tax5) / 100
+                'txttotal_after.Text = Format(CDbl(txttotal_amount.Text) - CDbl(txtTax_money.Text), "##,##0.00")
+                Tax5_Sum = 0
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            End If
+        End If
+
+        If Format(CDbl(txtTotal_remaining.Text), "##,##0.00") > CDbl(Tax_LAK5) Or Format(CDbl(txtTotal_remaining.Text), "##,##0.00") = CDbl(Tax_LAK6) Then
+            If Format(CDbl(txtTotal_remaining.Text), "##,##0.00") > CDbl(Tax_LAK5) Then
+                Tax5_cut = CDbl(Tax_LAK6) - CDbl(Tax_LAK5)
+                Tax5_Sum = CDbl(Tax5_cut) * CDbl(Tax6) / 100
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            Else
+                Tax5_cut = Format(CDbl(txtTotal_remaining.Text), "##,##0.00") - CDbl(Tax_LAK5)
+                Tax5_Sum = CDbl(Tax5_cut) * CDbl(Tax6) / 100
+                'txttotal_after.Text = Format(CDbl(txttotal_amount.Text) - CDbl(txtTax_money.Text), "##,##0.00")
+                Tax6_Sum = 0
+                Tax7_Sum = 0
+            End If
+        End If
+
+        If Format(CDbl(txtTotal_remaining.Text), "##,##0.00") > CDbl(Tax_LAK6) Then
+
+            Tax6_cut = Format(CDbl(txtTotal_remaining.Text), "##,##0.00") - CDbl(Tax_LAK6)
+            Tax6_Sum = CDbl(Tax6_cut) * CDbl(Tax7) / 100
+            'txttotal_after.Text = Format(CDbl(txttotal_amount.Text) - CDbl(txtTax_money.Text), "##,##0.00")
+        End If
+
+
+        txtTax.Text = Format(CDbl(Tax1_Sum) + CDbl(Tax2_Sum) + CDbl(Tax3_Sum) + CDbl(Tax4_Sum) + CDbl(Tax5_Sum) + CDbl(Tax6_Sum) + CDbl(Tax7_Sum), "##,##0.00")
+        txtToltal_All.Text = Format(CDbl(txtTotal_remaining.Text) - CDbl(txtTax.Text) + CDbl(txtkhongsep.Text) + CDbl(txtson_Money.Text) + CDbl(txtMom_mony.Text) - CDbl(txtTax.Text), "##,##0.00")
+        'txtToltal_All.Text = Format(CDbl(txtTotal_remaining.Text) - CDbl(txtTax.Text), "##,##0")
+        'txtnet_money.Text = Format(CDbl(txttotal_after.Text), "##,##0")
+
+    End Sub
+
+    Private Sub Badd_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Badd.Click
+        addnew()
+    End Sub
+    Private Sub AutoNumber()
+        Dim VIOT As New ADODB.Recordset
+        Dim VIOTNEW As String
+        Call LoadRs("SELECT top 1 Bill_no from AP_donw_Personal    Order by Bill_no DESC", VIOT)
+        If VIOT.RecordCount <> 0 Then
+            VIOTNEW = Format(Val(Mid(VIOT.Fields("Bill_no").Value, 1, 6)) + 1, "000000")
+        Else
+            VIOTNEW = "000001"
+
+        End If
+        txt_no.Text = Trim(CStr(VIOTNEW.ToString))
+    End Sub
+    Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
+        If txt_no.Text = "" Then MsgBox("ໃສ່ລະຫັດພະນັກງານກ່ອນ") : Exit Sub
+
+        'If txtEM_ID.Text = "" Then MsgBox("ໃສ່ລະຫັດພະນັກງານກ່ອນ") : txtEM_ID.Focus() : Exit Sub
+
+
+        Save()
+        MsgBox("Save complete!", MsgBoxStyle.OkOnly)
+    End Sub
+
+    Private Sub Save()
+        Dim aa As String
+        Dim rs As New ADODB.Recordset
+        With rs
+            Call LoadRs("SELECT * FROM  AP_Salary_in_Month WHERE   E_ID = '" & txtid.Text & "' " & shr_Month & " ", rs)
+            If .RecordCount = 0 Then
+
+                aa = "INSERT INTO   AP_Salary_in_Month (E_ID,DT_Month, Sections_id, Sections, Department_id, Department, txt_type_in_id, cmb_type_in, Name_L, Name_E,  " & _
+                " Phone, Bank_no, SSO_no, percen, txtclass,txtlevel, txtV_C, Level_Clss_Money, Tumnang_Money, year_money, txttotal, AGL, Total_remaining, " & _
+                " Tax, khongsep, txtson, txtson_Money, txtmom, txtMom_mony,  txtToltal_All, remark, lst_updt, lst_usr, Pc_nm) " & _
+               " VALUES(N'" & (txtid.Text) & "'," & _
+                 " '" & Format(DT_up.Value, "yyyy-MM-dd") & "'," & _
+                     " N'" & (txtSection_ID.Text) & "'," & _
+                   " N'" & (Cmb_Sections.Text) & "'," & _
+                     " N'" & (txtdepart_ID.Text) & "'," & _
+                   " N'" & (cmb_Department.Text) & "'," & _
+                     " N'" & (txt_type_in_id.Text) & "'," & _
+                   " N'" & (cmb_type_in.Text) & "'," & _
+                      " N'" & (TxtPersonNmL.Text) & "'," & _
+                 " N'" & (TxtPersonNmE.Text) & "'," & _
+                      " N'" & (TxtTel.Text) & "'," & _
+                   " N'" & (TxtAccountNo.Text) & "'," & _
+                   " N'" & (txtAPSocial.Text) & "'," & _
+                  " " & CDbl(cmb_percen.Text) & "," & _
+                   " N'" & (cmbclass.Text) & "'," & _
+                    " N'" & (cmblevel.Text) & "'," & _
+                     " N'" & (txtV_C.Text) & "'," & _
+                  " " & CDbl(txtLevel_Clss_Money_Now.Text) & "," & _
+                     " " & CDbl(txtTumnang_Money.Text) & "," & _
+                  " " & CDbl(txtyear_money.Text) & "," & _
+                 " " & CDbl(txttotal.Text) & "," & _
+                    " " & CDbl(txtAGL.Text) & "," & _
+                  " " & CDbl(txtTotal_remaining.Text) & "," & _
+                   " " & CDbl(txtTax.Text) & "," & _
+                  " " & CDbl(txtkhongsep.Text) & "," & _
+                       " " & CDbl(txtson.Text) & "," & _
+                           " " & CDbl(txtson_Money.Text) & "," & _
+                             " " & CDbl(txtmom.Text) & "," & _
+                               " " & CDbl(txtMom_mony.Text) & "," & _
+                                  " " & CDbl(txtToltal_All.Text) & "," & _
+                                       " N'" & (txtremark.Text) & "'," & _
+                                        " Getdate()," & _
+                               " N'" & MUserName & "'," & _
+                            " '" & MDServerName & "')"
+                Conn.Execute(aa)
+            Else
+                Conn.Execute("delete from   AP_Salary_in_Month WHERE    E_ID= '" & (txtid.Text) & "' " & shr_Month & " ")
+
+                aa = "INSERT INTO   AP_Salary_in_Month (E_ID, DT_Month,Sections_id, Sections, Department_id, Department, txt_type_in_id, cmb_type_in, Name_L, Name_E,  " & _
+               " Phone, Bank_no, SSO_no, percen, txtclass,txtlevel, txtV_C, Level_Clss_Money, Tumnang_Money, year_money, txttotal, AGL, Total_remaining, " & _
+               " Tax, khongsep, txtson, txtson_Money, txtmom, txtMom_mony,  txtToltal_All, remark, lst_updt, lst_usr, Pc_nm) " & _
+              " VALUES(N'" & (txtid.Text) & "'," & _
+                " '" & Format(DT_up.Value, "yyyy-MM-dd") & "'," & _
+                    " N'" & (txtSection_ID.Text) & "'," & _
+                  " N'" & (Cmb_Sections.Text) & "'," & _
+                    " N'" & (txtdepart_ID.Text) & "'," & _
+                  " N'" & (cmb_Department.Text) & "'," & _
+                    " N'" & (txt_type_in_id.Text) & "'," & _
+                  " N'" & (cmb_type_in.Text) & "'," & _
+                     " N'" & (TxtPersonNmL.Text) & "'," & _
+                " N'" & (TxtPersonNmE.Text) & "'," & _
+                     " N'" & (TxtTel.Text) & "'," & _
+                  " N'" & (TxtAccountNo.Text) & "'," & _
+                  " N'" & (txtAPSocial.Text) & "'," & _
+                 " " & CDbl(cmb_percen.Text) & "," & _
+                  " N'" & (cmbclass.Text) & "'," & _
+                   " N'" & (cmblevel.Text) & "'," & _
+                    " N'" & (txtV_C.Text) & "'," & _
+                 " " & CDbl(txtLevel_Clss_Money_Now.Text) & "," & _
+                    " " & CDbl(txtTumnang_Money.Text) & "," & _
+                 " " & CDbl(txtyear_money.Text) & "," & _
+                " " & CDbl(txttotal.Text) & "," & _
+                   " " & CDbl(txtAGL.Text) & "," & _
+                 " " & CDbl(txtTotal_remaining.Text) & "," & _
+                  " " & CDbl(txtTax.Text) & "," & _
+                 " " & CDbl(txtkhongsep.Text) & "," & _
+                      " " & CDbl(txtson.Text) & "," & _
+                          " " & CDbl(txtson_Money.Text) & "," & _
+                            " " & CDbl(txtmom.Text) & "," & _
+                              " " & CDbl(txtMom_mony.Text) & "," & _
+                                 " " & CDbl(txtToltal_All.Text) & "," & _
+                                      " N'" & (txtremark.Text) & "'," & _
+                                       " Getdate()," & _
+                              " N'" & MUserName & "'," & _
+                           " '" & MDServerName & "')"
+                Conn.Execute(aa)
+            End If
+        End With
+
+        aa = "update AP_Salary_in_Month set DT_work_today ='" & (Format(DT_up.Value, "yyyy-MM-dd")) & "'" & _
+      "   where   month(DT_Month) ='" & Month(DT_up.Value) & "' and year(DT_Month) ='" & Year(DT_up.Value) & "' "
+        Conn.Execute(aa)
+
+        aa = "update AP_Salary_in_Month set AP_Salary_in_Month.QTY_year = DateDiff(YEAR,AP_CV.DT_strt_work,AP_Salary_in_Month.DT_work_today ) " & _
+                 "   from AP_CV where AP_Salary_in_Month.e_id = AP_CV.E_ID "
+        Conn.Execute(aa)
+
+        'Conn.Execute(" UPDATE AP_CV SET " & _
+        '               " percen=" & CDbl(cmb_percen.Text) & "," & _
+        '          " cmbclass='" & cmbclass.Text & "'," & _
+        '           " cmblevel='" & cmblevel.Text & "'," & _
+        '           " txtV_C='" & txtV_C.Text & "'," & _
+        '           " Level_Clss_Money=" & CDbl(txtLevel_Clss_Money_Now.Text) & "," & _
+        '            " Tumnang_Money=" & CDbl(txtTumnang_Money.Text) & "," & _
+        '             " year_money=" & CDbl(txtyear_money.Text) & "," & _
+        '              " txttotal=" & CDbl(txttotal.Text) & "," & _
+        '               " AGL=" & CDbl(txtAGL.Text) & "," & _
+        '                " Total_remaining=" & CDbl(txtTotal_remaining.Text) & "," & _
+        '                 " Tax=" & CDbl(txtTax.Text) & "," & _
+        '                  " khongsep=" & CDbl(txtkhongsep.Text) & "," & _
+        '                   " txtson=" & CDbl(txtson.Text) & "," & _
+        '                    " txtson_Money=" & CDbl(txtson_Money.Text) & "," & _
+        '                     " txtmom=" & CDbl(txtmom.Text) & "," & _
+        '                      " txtMom_mony=" & CDbl(txtMom_mony.Text) & "," & _
+        '                        " txtToltal_All=" & CDbl(txtToltal_All.Text) & "" & _
+        '          " WHERE E_ID= '" & (txtid.Text) & "'")
+
+
+
+    End Sub
+
+
+
+    Private Sub cmb_percen_SelectedIndexChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles cmb_percen.SelectedIndexChanged
+
+        Load_Tax()
+        txtV_C.Text = cmbclass.Text & "/" & cmblevel.Text
+        txtLevel_Clss_Money_Now.Text = 0
+        txtLevel_Clss_Money_Now.Text = Format(CDbl(txtLevel_Clss_Money_Now.Text) * CDbl(cmb_percen.Text) / 100, "##,##0.00")
+        loadmonet_class()
+        Load_sum_tax()
+
+    End Sub
+
+    Private Sub txtTumnang_Money_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtTumnang_Money.KeyDown
+        Select Case e.KeyCode
+            Case Keys.Enter
+                txtTumnang_Money.Text = Format(CDbl(txtTumnang_Money.Text), "##,##0.00")
+                loadmonet_class()
+                Load_sum_tax()
+        End Select
+    End Sub
+
+    Private Sub txtTumnang_Money_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtTumnang_Money.TextChanged
+
+    End Sub
+
+    Private Sub txtkhongsep_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtkhongsep.KeyDown
+        Select Case e.KeyCode
+            Case Keys.Enter
+                loadmonet_class()
+                Load_sum_tax()
+                txtkhongsep.Text = Format(CDbl(txtkhongsep.Text), "##,##0.00")
+        End Select
+    End Sub
+
+    Private Sub txtkhongsep_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtkhongsep.TextChanged
+
+    End Sub
+
+    Private Sub txtyear_money_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtyear_money.KeyDown
+        Select Case e.KeyCode
+            Case Keys.Enter
+                loadmonet_class()
+                Load_sum_tax()
+                txtyear_money.Text = Format(CDbl(txtyear_money.Text), "##,##0.00")
+        End Select
+    End Sub
+
+    Private Sub txtyear_money_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtyear_money.TextChanged
+
+    End Sub
+
+    Private Sub txtAGL_KeyDown(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyEventArgs) Handles txtAGL.KeyDown
+        Select Case e.KeyCode
+            Case Keys.Enter
+                loadmonet_class()
+                Load_sum_tax()
+                txtAGL.Text = Format(CDbl(txtAGL.Text), "##,##0.00")
+        End Select
+    End Sub
+ 
+    Private Sub txtAGL_TextChanged(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles txtAGL.TextChanged
+
+    End Sub
+End Class
