@@ -40,7 +40,7 @@ class EmployeeImporter:
     def connect(self):
         """Establish database connection."""
         try:
-            self.conn = mysql.connector.connect(**self.db_config)
+            self.conn = mysql.connector.connect(**self.db_config, charset='utf8mb4')
             self.cursor = self.conn.cursor(dictionary=True)
             print("✓ Database connected")
         except Error as e:
@@ -304,6 +304,7 @@ def main():
         "user": args.user,
         "password": args.password,
         "database": args.database,
+        "charset": "utf8mb4",
     })
 
     try:
